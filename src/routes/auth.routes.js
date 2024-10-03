@@ -5,7 +5,7 @@ import { singleUpload } from "../middlewares/multer.js";
 
 const app = express();
 
-app.post("/register", singleUpload, register);
+app.post("/register", register);
 app.post("/login", login);
 app.get("/logout", isAuthenticated, logout);
 app.get("/my-profile", isAuthenticated, getMyProfile);

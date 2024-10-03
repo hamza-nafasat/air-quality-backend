@@ -12,26 +12,22 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 // ---------
 const register = asyncHandler(async (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
-  const image = req?.file;
-  if (!firstName || !lastName || !email || !password || !image) {
+  // const image = req?.file;
+  if (!firstName || !lastName || !email || !password) {
     return next(new CustomError(400, "Please Provide all fields"));
   }
   const user = await Auth.findOne({ email });
   if (user && user?._id) return next(new CustomError(403, "Email Already Exists"));
 
-  const myCloud = await uploadOnCloudinary(image, "auth");
-  if (!myCloud?.public_id || !myCloud?.secure_url) {
-    return next(new CustomError(400, "Error While Uploading User Image on Cloudinary"));
-  }
+  // const myCloud = await uploadOnCloudinary(image, "auth");
+  // if (!myCloud?.public_id || !myCloud?.secure_url) {
+  //   return next(new CustomError(400, "Error While Uploading User Image on Cloudinary"));
+  // }
   const newUser = await Auth.create({
     firstName,
     lastName,
     email,
     password,
-    image: {
-      public_id: myCloud?.public_id,
-      url: myCloud?.secure_url,
-    },
   });
   if (!newUser) return next(new CustomError(400, "Error While Registering User"));
   await sendToken(res, next, newUser, 201, "Your Account Registered Successfully");
