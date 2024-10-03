@@ -1,8 +1,12 @@
 import multer from "multer";
 
-const singleUpload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-}).single("file");
+const storage = multer.memoryStorage();
+const limits = { fileSize: 10 * 1024 * 1024 }; // 10MB
 
-export { singleUpload };
+const singleUpload = multer({ storage, limits }).single("file");
+const multiUpload = multer({ storage, limits }).fields([
+  { name: "thumbnail", maxCount: 1 },
+  { name: "2dModel", maxCount: 1 },
+]);
+
+export { singleUpload, multiUpload };
