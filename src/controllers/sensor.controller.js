@@ -7,11 +7,13 @@ import { CustomError } from "../utils/customError.js";
 // -------------
 const createSensor = asyncHandler(async (req, res, next) => {
   const ownerId = req?.user?._id;
-  const { name, type, uniqueId } = req.body;
-  if (!name || !type || !uniqueId) return next(new CustomError(400, "Please Provide all fields"));
+  const { name, type, uniqueId, ip, port, url, location } = req.body;
+  console.log(req.body);
+  if (!name || !type || !uniqueId || !ip || !port || !url || !location)
+    return next(new CustomError(400, "Please Provide all fields"));
   const isExist = await Sensor.findOne({ uniqueId });
   if (isExist) return next(new CustomError(400, "Unique id already exists"));
-  const sensor = await Sensor.create({ name, type, uniqueId, ownerId });
+  const sensor = await Sensor.create({ name, type, uniqueId, ownerId, ip, port, url, location });
   if (!sensor?._id) return next(new CustomError(400, "Error While Creating Sensor"));
   return res.status(201).json({ success: true, message: "Sensor Created Successfully" });
 });
@@ -20,7 +22,7 @@ const createSensor = asyncHandler(async (req, res, next) => {
 // ----------------
 const getAllSensors = asyncHandler(async (req, res, next) => {
   const ownerId = req?.user?._id;
-  const sensors = await Sensor.find({ ownerId });
+  const sensors = await Sensor.find({ ownerId }).sort({ createdAt: -1 });
   if (!sensors) return next(new CustomError(400, "Sensors Not Found"));
   return res.status(200).json({ success: true, data: sensors });
 });
@@ -42,13 +44,22 @@ const updateSingleSensor = asyncHandler(async (req, res, next) => {
   const ownerId = req?.user?._id;
   const { sensorId } = req.params;
   if (!isValidObjectId(sensorId)) return next(new CustomError(400, "Invalid Sensor Id"));
-  const { name, type, uniqueId } = req.body;
-  if (!name && !type && !uniqueId) return next(new CustomError(400, "Please Provide at least one field"));
+  const { name, type, uniqueId, ip, location, port, url, status } = req.body;
+  if (!name && !type && !uniqueId && !ip && !location && !port && !url && !status)
+    return next(new CustomError(400, "Please Provide at least one field"));
   const sensor = await Sensor.findOne({ _id: sensorId, ownerId });
   if (!sensor) return next(new CustomError(400, "Sensor Not Found"));
   if (name) sensor.name = name;
   if (type) sensor.type = type;
-  if (uniqueId) {
+  if (ip) sensor.ip = ip;
+  if (location) sensor.location = location;
+  if (port) sensor.port = port;
+  if (url) sensor.url = url;
+  if (status) {
+    if (status === "true") sensor.status = true;
+    if (status === "false") sensor.status = false;
+  }
+  if (uniqueId && uniqueId != sensor?.uniqueId) {
     const isExist = await Sensor.findOne({ uniqueId });
     if (isExist) return next(new CustomError(400, "Unique id already exists"));
     sensor.uniqueId = uniqueId;

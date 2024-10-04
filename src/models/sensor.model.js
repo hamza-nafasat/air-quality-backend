@@ -4,8 +4,13 @@ const sensorSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     type: { type: String, required: true },
+    ip: { type: String, required: true },
+    url: { type: String, required: true },
+    location: { type: String, required: true },
+    port: { type: Number, required: true },
     uniqueId: { type: String, required: true },
     isConnected: { type: Boolean, required: true, default: false },
+    status: { type: Boolean, required: true, default: true },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "Auth" },
   },
   { timestamps: true }
