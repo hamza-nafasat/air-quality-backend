@@ -5,7 +5,7 @@ const sensorSchema = new mongoose.Schema(
     name: { type: String, required: true },
     type: { type: String, required: true },
     uniqueId: { type: String, required: true },
-    isConnected: { type: Boolean, required: true },
+    isConnected: { type: Boolean, required: true, default: false },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "Auth" },
   },
   { timestamps: true }

@@ -1,23 +1,23 @@
 import express from "express";
-import { singleUpload } from "../middlewares/multer.js";
-import { isAuthenticated } from "../middlewares/authMiddleware.js";
 import {
-  createSensor,
-  deleteSingleSensor,
-  getAllSensors,
-  getSingleSensor,
-  updateSingleSensor,
-} from "../controllers/sensor.controller.js";
+  createBuilding,
+  deleteSingleBuilding,
+  getAllBuildings,
+  getSingleBuilding,
+  updateSingleBuilding,
+} from "../controllers/building.controller.js";
+import { isAuthenticated } from "../middlewares/authMiddleware.js";
+import { multiUpload } from "../middlewares/multer.js";
 
 const app = express();
 
-app.post("/create", isAuthenticated, createSensor);
+app.post("/create", isAuthenticated, multiUpload, createBuilding);
 app
-  .route("/single/:sensorId")
-  .get(isAuthenticated, getSingleSensor)
-  .put(isAuthenticated, singleUpload, updateSingleSensor)
-  .delete(isAuthenticated, deleteSingleSensor);
+  .route("/single/:buildingId")
+  .get(isAuthenticated, getSingleBuilding)
+  .put(isAuthenticated, multiUpload, updateSingleBuilding)
+  .delete(isAuthenticated, deleteSingleBuilding);
 
-app.get("/all", isAuthenticated, getAllSensors);
+app.get("/all", isAuthenticated, getAllBuildings);
 
 export default app;
