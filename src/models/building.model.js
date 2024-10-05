@@ -9,7 +9,7 @@ const buildingSchema = new mongoose.Schema(
     address: { type: String, required: true },
     thumbnail: { type: imageSchema, required: true },
     twoDModel: { type: imageSchema, required: true },
-    position: { type: [Number, Number], required: true },
+    position: { type: Array, required: true },
     ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "Auth" },
     floors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Floor" }],
   },

@@ -10,42 +10,46 @@ import { Sensor } from "../models/sensor.model.js";
 // ---------------
 const createFloor = asyncHandler(async (req, res, next) => {
   const ownerId = req?.user?._id;
-  const { name, rooms, area, sensors, buildingId } = req.body;
+  let { name, rooms, sensors, buildingId } = req.body;
+  console.log("rea.body of floor", req.body);
   const file = req.file;
   // validation
-  if (!name || !rooms || !area || !file) return next(new CustomError(400, "Please Provide all fields"));
-  if (!Array.isArray(sensors)) return next(new CustomError(400, "Floors must be an Array of ObjectIds"));
+  if (!name || !rooms || !file) return next(new CustomError(400, "Please Provide all fields"));
+  sensors = sensors?.split(",");
+  console.log("sesnors ", sensors);
+  if (!Array.isArray(sensors)) return next(new CustomError(400, "Sensors must be an Array of ObjectIds"));
   if (!isValidObjectId(buildingId)) return next(new CustomError(400, "Invalid Building Id"));
   const sensorsPromises = [];
   const sensorsSet = new Set();
   sensors?.forEach((element) => {
-    if (!isValidObjectId(element)) return next(new CustomError(400, "Floors must be an Array of Ids"));
-    sensorsPromises.push(Sensor.findById(element));
-    sensorsSet.add(element);
+    if (element) {
+      if (!isValidObjectId(element)) return next(new CustomError(400, "Sensors must be an Array of Ids"));
+      sensorsPromises.push(Sensor.findById(element));
+      sensorsSet.add(element);
+    }
   });
   const sensorsExist = await Promise.all(sensorsPromises);
   if (sensorsExist.includes(null)) return next(new CustomError(400, "Some Sensors aren't added correctly"));
   // upload images on cloudinary
 
-  const myCloud = await uploadOnCloudinary(thumbnailImage, "floors");
+  const myCloud = await uploadOnCloudinary(file, "floors");
   if (!myCloud?.public_id || !myCloud?.secure_url)
     return next(new CustomError(400, "Error While Uploading User Image on Cloudinary"));
 
   const floor = await Floor.create({
     name,
     rooms,
-    area,
     buildingId,
     sensors: [...sensorsSet],
     ownerId,
-    image: {
+    twoDModel: {
       public_id: myCloud.public_id,
       url: myCloud.secure_url,
     },
   });
   res.status(201).json({
-    status: "success",
-    floor,
+    success: true,
+    data: floor,
   });
 });
 
