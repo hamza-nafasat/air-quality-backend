@@ -16,7 +16,7 @@ const createFloor = asyncHandler(async (req, res, next) => {
   // validation
   if (!name || !rooms || !file) return next(new CustomError(400, "Please Provide all fields"));
   sensors = sensors?.split(",");
-  console.log("sesnors ", sensors);
+  // console.log("sesnors ", sensors);
   if (!Array.isArray(sensors)) return next(new CustomError(400, "Sensors must be an Array of ObjectIds"));
   if (!isValidObjectId(buildingId)) return next(new CustomError(400, "Invalid Building Id"));
   const sensorsPromises = [];
@@ -24,7 +24,7 @@ const createFloor = asyncHandler(async (req, res, next) => {
   sensors?.forEach((element) => {
     if (element) {
       if (!isValidObjectId(element)) return next(new CustomError(400, "Sensors must be an Array of Ids"));
-      sensorsPromises.push(Sensor.findById(element));
+      sensorsPromises.push(Sensor.findByIdAndUpdate(element, { isConnected: true }, { new: true }));
       sensorsSet.add(element);
     }
   });

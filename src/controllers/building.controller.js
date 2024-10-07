@@ -129,7 +129,9 @@ const deleteSingleBuilding = asyncHandler(async (req, res, next) => {
 // ------------------
 const getAllBuildings = asyncHandler(async (req, res, next) => {
   const ownerId = req?.user?._id;
-  const buildings = await Building.find({ ownerId });
+  const buildings = await Building.find({ ownerId }).populate("floors").populate({
+    path: "floors.sensors",
+  });
   if (!buildings) return next(new CustomError(400, "Buildings Not Found"));
   return res.status(200).json({ success: true, data: buildings });
 });
