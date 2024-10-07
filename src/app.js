@@ -13,7 +13,7 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:5173", "https://work-force-frontend.vercel.app"],
+    origin: ["http://localhost:5173", "https://air-quality-frontend.vercel.app"],
   })
 );
 app.use(express.json());
